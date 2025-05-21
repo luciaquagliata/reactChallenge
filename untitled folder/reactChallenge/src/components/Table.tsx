@@ -27,7 +27,7 @@ function Table() {
       const countEquals = (value.match(/=/g) || []).length;
 
       if(countEquals>1){
-        setError("Una formula no puede contener mas de un simbolo de '=");
+        setError("Una formula no puede contener mas de un simbolo de '='");
       } else{
 
         const formula = value.split('=')[1];
