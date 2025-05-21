@@ -2,24 +2,32 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateCell } from "../store";
 import type { cellType } from "../types/cellType";
 import type { RootState } from "../store";
+import { useState } from "react";
 
 function Table() {
   const dispatch = useDispatch();
   const table = useSelector((state: RootState) => {
     return state.cells;
   });
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddCells = () => {
-    const maxCol = Math.max(...table.map((item: cellType) => item.col));
-    const maxRow = Math.max(...table.map((item: cellType) => item.row));
 
-    dispatch(addCells({maxCol, maxRow}))
-  }
+  // const handleAddCells = () => {
+  //   const maxCol = Math.max(...table.map((item: cellType) => item.col));
+  //   const maxRow = Math.max(...table.map((item: cellType) => item.row));
+
+  //   dispatch(addCells({maxCol, maxRow}))
+  // }
 
   const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, id:string) => {
     const value = event.target.value;
 
     if(value.charAt(0) === '='){
+      const countEquals = (value.match(/=/g) || []).length;
+
+      if(countEquals>1){
+        setError("No se permite más de un signo '='.")
+      } else{
         const formula = value.split('=')[1];
         let result = 0;
         let cellA;
@@ -31,9 +39,9 @@ function Table() {
             cellA = formula.split('+')[0];
             cellB = formula.split('+')[1];
         }
-
         const rowA = Number(cellA.split(':')[0]);
         const colA = Number(cellA.split(':')[1]);
+        
         const valueA = table.find(cell => cell.row === rowA && cell.col === colA);
 
         const rowB = Number(cellB.split(':')[0]);
@@ -49,9 +57,13 @@ function Table() {
             } else{
                 result = intValueA + intValueB;
             }
-        }
 
-        dispatch(updateCell({ id, value: String(result)})); 
+            dispatch(updateCell({ id, value: String(result)})); 
+
+        } else{
+          setError("Veriifica que los contenidos de las celdas sean numeros.")
+        }
+      }
     }
   }
 
@@ -97,6 +109,7 @@ function Table() {
 
   return (
     <div>
+        {error && <div>{error}</div>}
         <table>
         <thead>
         <tr>
@@ -108,9 +121,10 @@ function Table() {
         {renderedRows}
         </tbody>
     </table>
-    <button onClick={handleAddCells}>Add cells</button>
+    
   </div>
   )
+  // <button onClick={handleAddCells}>Add cells</button>
 }
 
 export default Table;

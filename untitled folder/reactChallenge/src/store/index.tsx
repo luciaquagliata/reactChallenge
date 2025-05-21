@@ -1,6 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { cellsReducer, updateCell } from "./slices/cellsSlice";
 
+
+
 const store = configureStore({
     reducer: {
         cells: cellsReducer
