@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateCell } from "../store";
 import type { cellType } from "../types/cellType";
 import type { RootState } from "../store";
+import { useState } from "react";
 
 function Table() {
   const dispatch = useDispatch();
@@ -9,17 +10,26 @@ function Table() {
     return state.cells;
   });
 
-  const handleAddCells = () => {
-    const maxCol = Math.max(...table.map((item: cellType) => item.col));
-    const maxRow = Math.max(...table.map((item: cellType) => item.row));
+  const [error, setError] = useState<string | null>(null);
 
-    dispatch(addCells({maxCol, maxRow}))
-  }
+
+  // const handleAddCells = () => {
+  //   const maxCol = Math.max(...table.map((item: cellType) => item.col));
+  //   const maxRow = Math.max(...table.map((item: cellType) => item.row));
+
+  //   dispatch(addCells({maxCol, maxRow}))
+  // }
 
   const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, id:string) => {
     const value = event.target.value;
 
     if(value.charAt(0) === '='){
+      const countEquals = (value.match(/=/g) || []).length;
+
+      if(countEquals>1){
+        setError("Una formula no puede contener mas de un simbolo de '=");
+      } else{
+
         const formula = value.split('=')[1];
         let result = 0;
         let cellA;
@@ -49,9 +59,11 @@ function Table() {
             } else{
                 result = intValueA + intValueB;
             }
+            dispatch(updateCell({ id, value: String(result)})); 
+        } else{
+          setError("Asegurate de que todos los valores correspondan a numeros.")
         }
-
-        dispatch(updateCell({ id, value: String(result)})); 
+      }
     }
   }
 
@@ -97,6 +109,7 @@ function Table() {
 
   return (
     <div>
+        {error && <div>{error}</div>}
         <table>
         <thead>
         <tr>
@@ -108,9 +121,10 @@ function Table() {
         {renderedRows}
         </tbody>
     </table>
-    <button onClick={handleAddCells}>Add cells</button>
+    
   </div>
   )
+  //<button onClick={handleAddCells}>Add cells</button>
 }
 
 export default Table;
