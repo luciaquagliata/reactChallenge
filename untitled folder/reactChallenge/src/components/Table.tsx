@@ -6,17 +6,17 @@ import type { RootState } from "../store";
 function Table() {
   const dispatch = useDispatch();
   const table = useSelector((state: RootState) => {
-    return state.cells;
+    return state.cells.table;
   });
 
-  const handleAddCells = () => {
-    const maxCol = Math.max(...table.map((item: cellType) => item.col));
-    const maxRow = Math.max(...table.map((item: cellType) => item.row));
+  // const handleAddCells = () => {
+  //   const maxCol = Math.max(...table.map((item: cellType) => item.col));
+  //   const maxRow = Math.max(...table.map((item: cellType) => item.row));
 
-    dispatch(addCells({maxCol, maxRow}))
-  }
+  //   dispatch(addCells({maxCol, maxRow}))
+  // }
 
-  const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, id:string) => {
+  const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
 
     if(value.charAt(0) === '='){
@@ -34,15 +34,15 @@ function Table() {
 
         const rowA = Number(cellA.split(':')[0]);
         const colA = Number(cellA.split(':')[1]);
-        const valueA = table.find(cell => cell.row === rowA && cell.col === colA);
+        const valueA = table[rowA][colA].value;
 
         const rowB = Number(cellB.split(':')[0]);
         const colB = Number(cellB.split(':')[1]);
-        const valueB = table.find(cell => cell.row === rowB && cell.col === colB);
+        const valueB = table[rowB][colB].value;
 
-        if(!isNaN(Number(valueA?.value)) && !isNaN(Number(valueB?.value))){
-            const intValueA = Number(valueA?.value);
-            const intValueB = Number(valueB?.value);
+        if(!isNaN(Number(valueA)) && !isNaN(Number(valueB))){
+            const intValueA = Number(valueA);
+            const intValueB = Number(valueB);
             
             if(formula.includes('-')){
                 result = intValueA - intValueB;
@@ -51,32 +51,32 @@ function Table() {
             }
         }
 
-        dispatch(updateCell({ id, value: String(result)})); 
+        dispatch(updateCell({ row, col, value: String(result)})); 
     }
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, id: string) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
 
-    dispatch(updateCell({ id, value})); 
+    dispatch(updateCell({ row, col, value})); 
   }
 
 
-  const maxRow = Math.max(...table.map((item: cellType) => item.row));
+  const maxRow = table.length;
 
   const renderedRows = [];
 
-  for(let row = 1; row<= maxRow; row++){
-    const cellsInRow = table.filter((cell: cellType) => cell.row === row);
+  for(let row = 0; row<= maxRow; row++){
+    const cellsInRow = table[row];
 
     renderedRows.push(
       <tr key={row}>
         <th>{row}</th>
-        {cellsInRow.map((cell: cellType) => (
+        {cellsInRow.map((cell: cellType, i: number) => (
           <td key={cell.id}>
             <input
-            onBlur={(e) => handleEndOfSentence(e, cell.id)} 
-            onChange={(e) => handleChange(e, cell.id)} 
+            onBlur={(e) => handleEndOfSentence(e, row, i)} 
+            onChange={(e) => handleChange(e, row, i)} 
             value={cell.value || ''} 
             ></input>
           </td>
@@ -85,11 +85,11 @@ function Table() {
     )
   }
 
-  const maxCol = Math.max(...table.map((item: cellType) => item.col));
+  const maxCol = table[0].length;
   
   const renderedColumns = [];
 
-  for(let col = 1; col <= maxCol; col++){
+  for(let col = 0; col <= maxCol; col++){
     renderedColumns.push(
       <th key={col}>{col}</th>
     )
@@ -108,9 +108,11 @@ function Table() {
         {renderedRows}
         </tbody>
     </table>
-    <button onClick={handleAddCells}>Add cells</button>
+    
   </div>
   )
+
+  // <button onClick={handleAddCells}>Add cells</button>
 }
 
 export default Table;
