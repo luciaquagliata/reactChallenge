@@ -28,8 +28,8 @@ const cellsSlice = createSlice({
     initialState,
     reducers: {
         updateCell: (state, action) => {
-            const { row, col, newValue } = action.payload;
-            state.table[row][col].value = newValue;
+            const { row, col, value } = action.payload;
+            state.table[row][col].value = value;
         }          
     }
 });

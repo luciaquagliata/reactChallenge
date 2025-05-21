@@ -66,7 +66,7 @@ function Table() {
 
   const renderedRows = [];
 
-  for(let row = 0; row<= maxRow; row++){
+  for(let row = 0; row< maxRow; row++){
     const cellsInRow = table[row];
 
     renderedRows.push(
@@ -89,7 +89,7 @@ function Table() {
   
   const renderedColumns = [];
 
-  for(let col = 0; col <= maxCol; col++){
+  for(let col = 0; col < maxCol; col++){
     renderedColumns.push(
       <th key={col}>{col}</th>
     )
