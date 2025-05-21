@@ -2,12 +2,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateCell } from "../store";
 import type { cellType } from "../types/cellType";
 import type { RootState } from "../store";
+import { useState } from "react";
 
 function Table() {
   const dispatch = useDispatch();
   const table = useSelector((state: RootState) => {
     return state.cells.table;
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   // const handleAddCells = () => {
   //   const maxCol = Math.max(...table.map((item: cellType) => item.col));
@@ -20,6 +23,11 @@ function Table() {
     const value = event.target.value;
 
     if(value.charAt(0) === '='){
+      const countEquals = (value.match(/=/g) || []).length;
+
+      if(countEquals>1){
+        setError("Una formula no puede contener mas de un simbolo de '='");
+      } else{
         const formula = value.split('=')[1];
         let result = 0;
         let cellA;
@@ -49,9 +57,13 @@ function Table() {
             } else{
                 result = intValueA + intValueB;
             }
+            dispatch(updateCell({ row, col, value: String(result)})); 
+        } else {
+          setError("Asegurate de que todos los valores correspondan a numeros.");
         }
 
-        dispatch(updateCell({ row, col, value: String(result)})); 
+        
+      }
     }
   }
 
@@ -97,6 +109,7 @@ function Table() {
 
   return (
     <div>
+        {error && <div>{error}</div>}
         <table>
         <thead>
         <tr>
