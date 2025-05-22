@@ -1,5 +1,5 @@
 
-const parseOperand = (operand: string, table: any, alphabet: string[]): number | null => {
+const parseOperand = (operand: string, table: any, alphabet: string[], setError, dispatch): number | null => {
   if (!operand.includes(":")) {
     return isNaN(Number(operand)) ? null : Number(operand);
   }
@@ -10,7 +10,12 @@ const parseOperand = (operand: string, table: any, alphabet: string[]): number |
 
   if (isNaN(row) || colIndex === -1) return null;
 
-  const cellValue = table[row]?.[colIndex]?.value;
+  let cellValue = table[row]?.[colIndex]?.value;
+  if(table[row]?.[colIndex]?.formula){
+    const res = handleEndOfSentence(table[row]?.[colIndex]?.formula, row, colIndex, setError, dispatch, table, alphabet);
+    cellValue = res?.result;
+  }
+  
   return isNaN(Number(cellValue)) ? null : Number(cellValue);
 };
 
@@ -18,7 +23,8 @@ const calculateFormula = (
   formula: string,
   table: any,
   alphabet: string[],
-  setError: (msg: string) => void
+  setError: (msg: string) => void,
+  dispatch
 ): number | null => {
   const operator = formula.includes("+") ? "+" : formula.includes("-") ? "-" : null;
 
@@ -36,7 +42,7 @@ const calculateFormula = (
   const values: number[] = [];
 
   for (const op of operands) {
-    const value = parseOperand(op, table, alphabet);
+    const value = parseOperand(op, table, alphabet, setError, dispatch);
     if (value === null) {
       setError("Please verify that all values are valid.");
       return null;
@@ -62,7 +68,7 @@ export const handleEndOfSentence = (value: string, row: number, col: number, set
   }
 
   const formula = value.substring(1); // Remove '='
-  const result = calculateFormula(formula, table, alphabet, setError);
+  const result = calculateFormula(formula, table, alphabet, setError, dispatch);
 
   return {result, value}
 
