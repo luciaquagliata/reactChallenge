@@ -3,6 +3,7 @@ import { updateCell } from "../store";
 import type { cellType } from "../types/cellType";
 import type { RootState } from "../store";
 import { useState } from "react";
+import { StyledTable, CellInput } from "./styles";
 
 function Table() {
   const dispatch = useDispatch();
@@ -93,11 +94,11 @@ function Table() {
         <th>{row}</th>
         {cellsInRow.map((cell: cellType, i: number) => (
           <td key={cell.id}>
-            <input
+            <CellInput
             onBlur={(e) => handleEndOfSentence(e, row, i)} 
             onChange={(e) => handleChange(e, row, i)} 
             value={cell.value || ''} 
-            ></input>
+            ></CellInput>
           </td>
         ))}
       </tr>
@@ -116,8 +117,8 @@ function Table() {
 
   return (
     <div>
-        {error && <div>{error}</div>}
-        <table>
+      {error && <div>{error}</div>}
+      <StyledTable>
         <thead>
         <tr>
             <th></th>
@@ -127,7 +128,7 @@ function Table() {
         <tbody>
         {renderedRows}
         </tbody>
-    </table>
+      </StyledTable>
     
   </div>
   )
