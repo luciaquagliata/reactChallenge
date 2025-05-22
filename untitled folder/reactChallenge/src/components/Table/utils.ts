@@ -1,4 +1,5 @@
 import { updateCell } from "../../store";
+import type { cellType } from "../../types/cellType";
 
 const parseOperand = (operand: string, table: any, alphabet: string[]): number | null => {
   if (!operand.includes(":")) {
