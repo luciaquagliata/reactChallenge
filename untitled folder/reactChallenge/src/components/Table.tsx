@@ -35,41 +35,48 @@ function Table() {
         if(formula.includes('-')){
             cellA = formula.split('-')[0];
             cellB = formula.split('-')[1];
-        } else{
+        } else if(formula.includes('+')){
             cellA = formula.split('+')[0];
             cellB = formula.split('+')[1];
+        } else{
+          setError("Verifica la operacion solicitada, solo se aceptan sumas y restas.");
+          return;
         }
 
-        const rowA = Number(cellA.split(':')[0]);
-        const colA = Number(cellA.split(':')[1]);
-        const valueA = table[rowA][colA].value;
+        if(cellA.length<3 || cellB.length<3){
+          setError("Verifica las celdas seleccionadas.");
+        } else{
 
-        const rowB = Number(cellB.split(':')[0]);
-        const colB = Number(cellB.split(':')[1]);
-        const valueB = table[rowB][colB].value;
+          const rowA = Number(cellA.split(':')[0]);
+          const colA = Number(cellA.split(':')[1]);
+          const valueA = table[rowA][colA].value;
 
-        if(!isNaN(Number(valueA)) && !isNaN(Number(valueB))){
-            const intValueA = Number(valueA);
-            const intValueB = Number(valueB);
-            
-            if(formula.includes('-')){
-                result = intValueA - intValueB;
-            } else{
-                result = intValueA + intValueB;
-            }
-            dispatch(updateCell({ row, col, value: String(result)})); 
-        } else {
-          setError("Asegurate de que todos los valores correspondan a numeros.");
+          const rowB = Number(cellB.split(':')[0]);
+          const colB = Number(cellB.split(':')[1]);
+          const valueB = table[rowB][colB].value;
+
+          if(!isNaN(Number(valueA)) && !isNaN(Number(valueB))){
+              const intValueA = Number(valueA);
+              const intValueB = Number(valueB);
+              
+              if(formula.includes('-')){
+                  result = intValueA - intValueB;
+              } else{
+                  result = intValueA + intValueB;
+              }
+              setError('');
+              dispatch(updateCell({ row, col, value: String(result)})); 
+          } else {
+            setError("Asegurate de que todos los valores correspondan a numeros.");
+          }
         }
-
-        
       }
     }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
-
+    setError('');
     dispatch(updateCell({ row, col, value})); 
   }
 

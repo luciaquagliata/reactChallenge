@@ -21,7 +21,7 @@ const generateInitialTable = (): cellType[][] => {
 
 const initialState: { table: cellType[][] } = {
   table: generateInitialTable(),
-};
+}
 
 const cellsSlice = createSlice({
     name: "cell",
