@@ -1,5 +1,4 @@
 import { updateCell } from "../../store";
-import type { cellType } from "../../types/cellType";
 
 const parseOperand = (operand: string, table: any, alphabet: string[]): number | null => {
   if (!operand.includes(":")) {
@@ -25,13 +24,13 @@ const calculateFormula = (
   const operator = formula.includes("+") ? "+" : formula.includes("-") ? "-" : null;
 
   if (!operator) {
-    setError("Verifica la operación. Solo se aceptan sumas y restas.");
+    setError("Please verify the requested formula. Only addiDon and subtraction are accepted.");
     return null;
   }
 
   const operands = formula.split(operator).map(s => s.trim());
   if (operands.length < 2) {
-    setError("La fórmula debe tener al menos dos operandos.");
+    setError("Formula must have at least two operands.");
     return null;
   }
 
@@ -40,7 +39,7 @@ const calculateFormula = (
   for (const op of operands) {
     const value = parseOperand(op, table, alphabet);
     if (value === null) {
-      setError("Asegurate de que todos los valores sean válidos.");
+      setError("Please verify that all values are valid.");
       return null;
     }
     values.push(value);
@@ -68,7 +67,7 @@ export const handleEndOfSentence = (
 
   const matches = value.match(/=/g) || [];
   if (matches.length > 1) {
-    setError("Una fórmula no puede contener más de un '='");
+    setError("A formula cannot contain more than one '='");
     return;
   }
 
