@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { cellType } from "../../types/cellType";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { handleEndOfSentence } from "../../components/Table/utils";
 
 const screenWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
 const screenHeight = typeof window !== "undefined" ? window.innerHeight : 800;
@@ -42,8 +43,24 @@ const cellsSlice = createSlice({
               state.table[row][col].showFormula = false;
             }
         },
+        updateAllCells: (state, action: PayloadAction<{ setError, dispatch, alphabet: string[]}>) => {
+          const maxRow = state.table.length;
+          const maxCol = state.table[0].length;
+          for(let i=0; i<maxRow; i++){
+            for(let j=0; j<maxCol; j++){
+              let formula = '';
+              if(state.table[i][j].formula){
+                formula = state.table[i][j].formula;
+              }
+              const res = handleEndOfSentence(formula, i, j, action.payload.setError, action.payload.dispatch, state.table, action.payload.alphabet);
+                  if(res?.result){ // return {result, value}
+                    state.table[i][j].value = String(res.result);
+                  }
+            }
+          }
+        }
     }
 });
 
-export const { updateCell } = cellsSlice.actions;
+export const { updateCell, updateAllCells } = cellsSlice.actions;
 export const cellsReducer = cellsSlice.reducer;

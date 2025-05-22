@@ -1,8 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { updateCell } from "../../store";
+import { updateCell, updateAllCells } from "../../store";
 import type { cellType } from "../../types/cellType";
 import type { RootState } from "../../store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyledTable, CellInput, HeaderCell, RowHeader, ErrorMessage } from "./styles";
 import { handleEndOfSentence } from "./utils";
 
@@ -20,6 +20,32 @@ function Table() {
       setError('');
       dispatch(updateCell({ row, col, value, showFormula: true})); 
     }
+  }
+
+  const recalculateAllCells = () => {
+    for (let i = 0; i < table.length; i++) {
+      for (let j = 0; j < table[i].length; j++) {
+        const cell = table[i][j];
+        if (!cell) continue;
+
+        const formula = cell.formula || '';
+        const res = handleEndOfSentence(formula, i, j, setError, dispatch, table, alphabet);
+        if (res?.result) {
+          dispatch(updateCell({ row: i, col: j, value: String(res.result), formula }));
+        }
+      }
+    }
+  };
+  
+  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError, dispatch, table, alphabet: string[]) => {
+    const value = event.target.value;
+    const res = handleEndOfSentence(value, row, col, setError, dispatch, table, alphabet);
+    if(res?.result){
+      setError("");
+      dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
+      recalculateAllCells();
+    }
+    recalculateAllCells();
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
@@ -41,7 +67,7 @@ function Table() {
         {cellsInRow.map((cell: cellType, i: number) => (
           <td key={cell.id}>
             <CellInput
-            onBlur={(e) => handleEndOfSentence(e, row, i, setError, dispatch, table, alphabet)} 
+            onBlur={(e) => handleEnd(e, row, i, setError, dispatch, table, alphabet)} 
             onChange={(e) => handleChange(e, row, i)} 
             value={cell.showFormula ? cell.formula || '' : cell.value || ''} 
             onClick={(e) => handleSelectedInput(e, row, i)}

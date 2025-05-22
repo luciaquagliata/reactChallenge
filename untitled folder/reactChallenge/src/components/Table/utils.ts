@@ -1,4 +1,3 @@
-import { updateCell } from "../../store";
 
 const parseOperand = (operand: string, table: any, alphabet: string[]): number | null => {
   if (!operand.includes(":")) {
@@ -52,8 +51,7 @@ const calculateFormula = (
   return result;
 };
 
-export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
-  const value = event.target.value;
+export const handleEndOfSentence = (value: string, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
 
   if (!value.startsWith("=")) return;
 
@@ -66,8 +64,11 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
   const formula = value.substring(1); // Remove '='
   const result = calculateFormula(formula, table, alphabet, setError);
 
-  if (result !== null) {
-    setError("");
-    dispatch(updateCell({ row, col, value: String(result), formula: value }));
-  }
+  return {result, value}
+
+  // if (result !== null) {
+  //   setError("");
+  //   dispatch(updateCell({ row, col, value: String(result), formula: value }));
+  // }
+  
 };

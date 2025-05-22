@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { cellsReducer, updateCell } from "./slices/cellsSlice";
+import { cellsReducer, updateCell, updateAllCells } from "./slices/cellsSlice";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // usa localStorage
 import { combineReducers } from "@reduxjs/toolkit";
@@ -27,5 +27,5 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
-export { store, persistor, updateCell };
+export { store, persistor, updateCell, updateAllCells };
 export type RootState = ReturnType<typeof store.getState>;
