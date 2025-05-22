@@ -1,6 +1,6 @@
 import { updateCell } from "../../store";
 
-export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: any, dispatch: any, table: any) => {
+export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: any, dispatch: any, table: any, alphabet: string[]) => {
     const value = event.target.value;
 
     if(value.charAt(0) === '='){
@@ -8,6 +8,7 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
 
       if(countEquals>1){
         setError("Una formula no puede contener mas de un simbolo de '='");
+        return;
       } else{
         const formula = value.split('=')[1];
         let result = 0;
@@ -37,16 +38,22 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
               }
               setError('');
               dispatch(updateCell({ row, col, value: String(result)})); 
+              return;
             } else {
               setError("Asegurate de que todos los valores correspondan a numeros.");
+              return;
             }
           } else{ // el primero es numero el segundo es celda
             if(cellB.length<3){
               setError("Verifica las celdas seleccionadas.");
+              return;
             } else{
               const rowB = Number(cellB.split(':')[0]);
-              const colB = Number(cellB.split(':')[1]);
-              const valueB = table[rowB][colB].value;
+              const colB = cellB.split(':')[1];
+              let valueB = 0;
+              if(table[rowB][alphabet.indexOf(colB)].value){
+                valueB = table[rowB][alphabet.indexOf(colB)].value;
+              }
 
               if(!isNaN(Number(cellA)) && !isNaN(Number(valueB))){
                 const intValueA = Number(cellA);
@@ -59,18 +66,24 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
                 }
                 setError('');
                 dispatch(updateCell({ row, col, value: String(result)})); 
+                return;
               } else {
                 setError("Asegurate de que todos los valores correspondan a numeros.");
+                return;
               }
             }
           }
         } else if( !cellB.includes(':')){ // el primero es celda y el segundo es numero
           if(cellA.length<3){
             setError("Verifica las celdas seleccionadas.");
+            return;
           } else{
             const rowA = Number(cellA.split(':')[0]);
-            const colA = Number(cellA.split(':')[1]);
-            const valueA = table[rowA][colA].value;
+            const colA = cellA.split(':')[1];
+            let valueA = 0;
+            if(table[rowA][alphabet.indexOf(colA)].value){
+              valueA = table[rowA][alphabet.indexOf(colA)].value;
+            }
 
             if(!isNaN(Number(cellB)) && !isNaN(Number(valueA))){
               const intValueB = Number(cellB);
@@ -83,23 +96,31 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
               }
               setError('');
               dispatch(updateCell({ row, col, value: String(result)})); 
+              return;
             } else {
               setError("Asegurate de que todos los valores correspondan a numeros.");
+              return;
             }
           }
         } else{
           if(cellA.length<3 || cellB.length<3){
             setError("Verifica las celdas seleccionadas.");
+            return;
           } else{
   
             const rowA = Number(cellA.split(':')[0]);
-            const colA = Number(cellA.split(':')[1]);
-            const valueA = table[rowA][colA].value;
+            const colA = cellA.split(':')[1];
+            
   
             const rowB = Number(cellB.split(':')[0]);
-            const colB = Number(cellB.split(':')[1]);
-            const valueB = table[rowB][colB].value;
-  
+            const colB = cellB.split(':')[1];
+            let valueB = 0
+            let valueA = 0
+            if(table[rowB][alphabet.indexOf(colB)].value && table[rowA][alphabet.indexOf(colA)].value){
+              valueB = table[rowB][alphabet.indexOf(colB)].value;
+              valueA = table[rowA][alphabet.indexOf(colA)].value;
+            }
+            
             if(!isNaN(Number(valueA)) && !isNaN(Number(valueB))){
                 const intValueA = Number(valueA);
                 const intValueB = Number(valueB);
@@ -111,8 +132,10 @@ export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, 
                 }
                 setError('');
                 dispatch(updateCell({ row, col, value: String(result)})); 
+                return;
             } else {
               setError("Asegurate de que todos los valores correspondan a numeros.");
+              return;
             }
           }
         }

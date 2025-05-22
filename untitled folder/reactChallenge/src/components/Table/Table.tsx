@@ -34,7 +34,7 @@ function Table() {
         {cellsInRow.map((cell: cellType, i: number) => (
           <td key={cell.id}>
             <CellInput
-            onBlur={(e) => handleEndOfSentence(e, row, i, setError, dispatch, table)} 
+            onBlur={(e) => handleEndOfSentence(e, row, i, setError, dispatch, table, alphabet)} 
             onChange={(e) => handleChange(e, row, i)} 
             value={cell.value || ''} 
             ></CellInput>
@@ -48,9 +48,16 @@ function Table() {
   
   const renderedColumns = [];
 
+  const alphabet = [
+    "A", "B", "C", "D", "E", "F", "G",
+    "H", "I", "J", "K", "L", "M", "N",
+    "O", "P", "Q", "R", "S", "T", "U",
+    "V", "W", "X", "Y", "Z"
+  ];  
+
   for(let col = 0; col < maxCol; col++){
     renderedColumns.push(
-      <HeaderCell key={col}>{col}</HeaderCell>
+      <HeaderCell key={col}>{alphabet[col]}</HeaderCell>
     )
   }
 
