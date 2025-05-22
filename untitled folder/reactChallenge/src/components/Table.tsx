@@ -3,7 +3,7 @@ import { updateCell } from "../store";
 import type { cellType } from "../types/cellType";
 import type { RootState } from "../store";
 import { useState } from "react";
-import { StyledTable, CellInput } from "./styles";
+import { StyledTable, CellInput, HeaderCell, RowHeader } from "./styles";
 
 function Table() {
   const dispatch = useDispatch();
@@ -12,13 +12,6 @@ function Table() {
   });
 
   const [error, setError] = useState<string | null>(null);
-
-  // const handleAddCells = () => {
-  //   const maxCol = Math.max(...table.map((item: cellType) => item.col));
-  //   const maxRow = Math.max(...table.map((item: cellType) => item.row));
-
-  //   dispatch(addCells({maxCol, maxRow}))
-  // }
 
   const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
@@ -91,7 +84,7 @@ function Table() {
 
     renderedRows.push(
       <tr key={row}>
-        <th>{row}</th>
+        <RowHeader>{row}</RowHeader>
         {cellsInRow.map((cell: cellType, i: number) => (
           <td key={cell.id}>
             <CellInput
@@ -111,7 +104,7 @@ function Table() {
 
   for(let col = 0; col < maxCol; col++){
     renderedColumns.push(
-      <th key={col}>{col}</th>
+      <HeaderCell key={col}>{col}</HeaderCell>
     )
   }
 
@@ -133,7 +126,6 @@ function Table() {
   </div>
   )
 
-  // <button onClick={handleAddCells}>Add cells</button>
 }
 
 export default Table;
