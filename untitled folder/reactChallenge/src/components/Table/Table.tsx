@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { updateAllCells, updateCell } from "../../store";
+import { updateCell } from "../../store";
 import type { cellType } from "../../types/cellType";
 import type { RootState } from "../../store";
 import { useState } from "react";
@@ -27,11 +27,6 @@ function Table() {
     setError('');
     dispatch(updateCell({ row, col, value})); 
   }
-
-  // const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
-  //   calculateFormulaTotal(event, row, col, setError, dispatch, table, alphabet);
-  //   dispatch(updateAllCells({event, row, col, dispatch, alphabet}));
-  // }
 
   const maxRow = table.length;
 

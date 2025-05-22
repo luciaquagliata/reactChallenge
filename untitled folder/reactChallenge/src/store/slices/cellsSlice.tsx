@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { cellType } from "../../types/cellType";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { calculateFormulaTotal } from "../../utils"; 
 
 const screenWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
 const screenHeight = typeof window !== "undefined" ? window.innerHeight : 800;
@@ -46,5 +45,5 @@ const cellsSlice = createSlice({
     }
 });
 
-export const { updateCell, updateAllCells } = cellsSlice.actions;
+export const { updateCell } = cellsSlice.actions;
 export const cellsReducer = cellsSlice.reducer;
