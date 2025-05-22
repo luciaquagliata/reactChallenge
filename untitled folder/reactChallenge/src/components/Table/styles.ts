@@ -49,3 +49,13 @@ export const CellInput = styled.input`
     background-color: #eef6ff;
   }
 `;
+
+export const ErrorMessage = styled.div`
+  color: white;
+  background-color: #e74c3c;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+`;

@@ -3,7 +3,7 @@ import { updateCell } from "../../store";
 import type { cellType } from "../../types/cellType";
 import type { RootState } from "../../store";
 import { useState } from "react";
-import { StyledTable, CellInput, HeaderCell, RowHeader } from "./styles";
+import { StyledTable, CellInput, HeaderCell, RowHeader, ErrorMessage } from "./styles";
 import { handleEndOfSentence } from "./utils";
 
 function Table() {
@@ -19,7 +19,6 @@ function Table() {
     setError('');
     dispatch(updateCell({ row, col, value})); 
   }
-
 
   const maxRow = table.length;
 
@@ -63,7 +62,7 @@ function Table() {
 
   return (
     <div>
-      {error && <div>{error}</div>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       <StyledTable>
         <thead>
         <tr>
