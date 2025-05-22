@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { updateCell } from "../../store";
+import { updateAllCells, updateCell } from "../../store";
 import type { cellType } from "../../types/cellType";
 import type { RootState } from "../../store";
 import { useState } from "react";
@@ -14,11 +14,24 @@ function Table() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const handleSelectedInput = (event: React.MouseEvent<HTMLInputElement>, row: number, col: number) => {
+    if(table[row][col].formula && table[row][col].formula.length>0){
+      const value = (event.target as HTMLInputElement).value;
+      setError('');
+      dispatch(updateCell({ row, col, value, showFormula: true})); 
+    }
+  }
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
     setError('');
     dispatch(updateCell({ row, col, value})); 
   }
+
+  // const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
+  //   calculateFormulaTotal(event, row, col, setError, dispatch, table, alphabet);
+  //   dispatch(updateAllCells({event, row, col, dispatch, alphabet}));
+  // }
 
   const maxRow = table.length;
 
@@ -35,7 +48,8 @@ function Table() {
             <CellInput
             onBlur={(e) => handleEndOfSentence(e, row, i, setError, dispatch, table, alphabet)} 
             onChange={(e) => handleChange(e, row, i)} 
-            value={cell.value || ''} 
+            value={cell.showFormula ? cell.formula || '' : cell.value || ''} 
+            onClick={(e) => handleSelectedInput(e, row, i)}
             ></CellInput>
           </td>
         ))}

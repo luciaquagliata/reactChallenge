@@ -1,4 +1,4 @@
-import { updateCell } from "../../store";
+import { updateCell } from "./store";
 
 const parseOperand = (operand: string, table: any, alphabet: string[]): number | null => {
   if (!operand.includes(":")) {
@@ -18,19 +18,16 @@ const parseOperand = (operand: string, table: any, alphabet: string[]): number |
 const calculateFormula = (
   formula: string,
   table: any,
-  alphabet: string[],
-  setError: (msg: string) => void
+  alphabet: string[]
 ): number | null => {
   const operator = formula.includes("+") ? "+" : formula.includes("-") ? "-" : null;
 
   if (!operator) {
-    setError("Please verify the requested formula. Only addiDon and subtraction are accepted.");
     return null;
   }
 
   const operands = formula.split(operator).map(s => s.trim());
   if (operands.length < 2) {
-    setError("Formula must have at least two operands.");
     return null;
   }
 
@@ -39,7 +36,6 @@ const calculateFormula = (
   for (const op of operands) {
     const value = parseOperand(op, table, alphabet);
     if (value === null) {
-      setError("Please verify that all values are valid.");
       return null;
     }
     values.push(value);
@@ -52,22 +48,20 @@ const calculateFormula = (
   return result;
 };
 
-export const handleEndOfSentence = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
+export const calculateFormulaTotal = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, dispatch: any, table: any, alphabet: string[]) => {
   const value = event.target.value;
 
   if (!value.startsWith("=")) return;
 
   const matches = value.match(/=/g) || [];
   if (matches.length > 1) {
-    setError("A formula cannot contain more than one '='");
     return;
   }
 
   const formula = value.substring(1); // Remove '='
-  const result = calculateFormula(formula, table, alphabet, setError);
+  const result = calculateFormula(formula, table, alphabet);
 
   if (result !== null) {
-    setError("");
     dispatch(updateCell({ row, col, value: String(result), formula: value }));
   }
 };
