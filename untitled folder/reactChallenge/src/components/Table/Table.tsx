@@ -36,6 +36,22 @@ function Table() {
       }
     }
   };
+
+  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement> , row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
+    if (event.key === "Enter") {
+      (event.target as HTMLInputElement).blur();
+      const value = event.currentTarget.value;
+      const res = handleEndOfSentence(value, setError, dispatch, table, alphabet);
+      if(res && (res.result || res?.result === 0)){
+        setError("");
+        dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
+        //recalculateAllCells();
+      } else{
+        dispatch(updateCell({ row, col, value, formula: 'empty'}));
+      }
+      recalculateAllCells();
+    }
+  }
   
   const handleEnd = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
     const value = event.target.value;
@@ -73,6 +89,7 @@ function Table() {
             onChange={(e) => handleChange(e, row, i)} 
             value={cell.showFormula ? cell.formula || '' : cell.value || ''} 
             onClick={(e) => handleSelectedInput(e, row, i)}
+            onKeyDown={(e) => handleEnter(e, row, i, setError, dispatch, table, alphabet)}
             ></CellInput>
           </td>
         ))}

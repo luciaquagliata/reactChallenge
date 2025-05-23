@@ -68,14 +68,9 @@ export const handleEndOfSentence = (value: string, setError: (msg: string) => vo
     return;
   }
 
-  const formula = value.substring(1); // Remove '='
+  const formula = value.substring(1); 
   const result = calculateFormula(formula, table, alphabet, setError, dispatch);
 
   return {result, value}
-
-  // if (result !== null) {
-  //   setError("");
-  //   dispatch(updateCell({ row, col, value: String(result), formula: value }));
-  // }
   
 };
