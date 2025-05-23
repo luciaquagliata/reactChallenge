@@ -22,14 +22,14 @@ function Table() {
     }
   }
 
-  const recalculateAllCells = () => {
+  const recalculateAllCells = (row: number, col: number) => {
     for (let i = 0; i < table.length; i++) {
       for (let j = 0; j < table[i].length; j++) {
         const cell = table[i][j];
         if (!cell) continue;
 
         const formula = cell.formula || '';
-        const res = handleEndOfSentence(formula,setError, dispatch, table, alphabet);
+        const res = handleEndOfSentence(formula,setError, dispatch, table, alphabet, row, col);
         if (res?.result) {
           dispatch(updateCell({ row: i, col: j, value: String(res.result), formula }));
         }
@@ -41,7 +41,7 @@ function Table() {
     if (event.key === "Enter") {
       (event.target as HTMLInputElement).blur();
       const value = event.currentTarget.value;
-      const res = handleEndOfSentence(value, setError, dispatch, table, alphabet);
+      const res = handleEndOfSentence(value, setError, dispatch, table, alphabet, row, col);
       if(res && (res.result || res?.result === 0)){
         setError("");
         dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
@@ -49,13 +49,13 @@ function Table() {
       } else{
         dispatch(updateCell({ row, col, value, formula: 'empty'}));
       }
-      recalculateAllCells();
+      recalculateAllCells(row, col);
     }
   }
   
   const handleEnd = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
     const value = event.target.value;
-    const res = handleEndOfSentence(value, setError, dispatch, table, alphabet);
+    const res = handleEndOfSentence(value, setError, dispatch, table, alphabet, row, col);
     if(res && (res.result || res?.result === 0)){
       setError("");
       dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
@@ -63,7 +63,7 @@ function Table() {
     } else{
       dispatch(updateCell({ row, col, value, formula: 'empty'}));
     }
-    recalculateAllCells();
+    recalculateAllCells(row, col);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
@@ -97,22 +97,42 @@ function Table() {
     )
   }
 
-  const maxCol = table[0].length;
+  const getExcelColumnLabel = (index: number): string => {
+    let label = '';
+    while (index >= 0) {
+      label = String.fromCharCode((index % 26) + 65) + label;
+      index = Math.floor(index / 26) - 1;
+    }
+    return label;
+  };
   
+
+  const maxCol = table[0].length;
+  const generateExcelAlphabet = (numCols: number): string[] => {
+    const result: string[] = [];
+    for (let i = 0; i < numCols; i++) {
+      let colName = "";
+      let n = i;
+      while (n >= 0) {
+        colName = String.fromCharCode((n % 26) + 65) + colName;
+        n = Math.floor(n / 26) - 1;
+      }
+      result.push(colName);
+    }
+    return result;
+  };
+  const alphabet = generateExcelAlphabet(maxCol);
+  
+
   const renderedColumns = [];
 
-  const alphabet = [
-    "A", "B", "C", "D", "E", "F", "G",
-    "H", "I", "J", "K", "L", "M", "N",
-    "O", "P", "Q", "R", "S", "T", "U",
-    "V", "W", "X", "Y", "Z"
-  ];  
-
-  for(let col = 0; col < maxCol; col++){
+  for (let col = 0; col < maxCol; col++) {
     renderedColumns.push(
-      <HeaderCell key={col}>{alphabet[col]}</HeaderCell>
-    )
+      <HeaderCell key={col}>{getExcelColumnLabel(col)}</HeaderCell>
+    );
   }
+  
+
 
   return (
     <div>

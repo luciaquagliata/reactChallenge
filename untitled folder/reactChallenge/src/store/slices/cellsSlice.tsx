@@ -55,9 +55,25 @@ const cellsSlice = createSlice({
 
       state.table.push(...newRows);
     },
+
+    addColumns: (state) => {
+      const numNewCols = 10;
+      const currentColCount = state.table[0]?.length || 0;
+    
+      state.table.forEach((row, rowIndex) => {
+        const newCells = Array.from({ length: numNewCols }, (_, colIndex): cellType => ({
+          id: `${rowIndex}:${currentColCount + colIndex}`,
+          formula: "",
+          value: "",
+          showFormula: false,
+        }));
+        row.push(...newCells);
+      });
+    },
+    
   },
 });
 
 
-export const { updateCell, addRows } = cellsSlice.actions;
+export const { updateCell, addRows, addColumns } = cellsSlice.actions;
 export const cellsReducer = cellsSlice.reducer;

@@ -1,4 +1,4 @@
-const parseOperand = (operand: string, table: any, alphabet: string[], setError: (msg: string) => void, dispatch: any): number | null => {
+const parseOperand = (operand: string, table: any, alphabet: string[], setError: (msg: string) => void, dispatch: any, currentRow: number, currentCol: number): number | null => {
   if (!operand.includes(":")) {
     return isNaN(Number(operand)) ? null : Number(operand);
   }
@@ -10,8 +10,8 @@ const parseOperand = (operand: string, table: any, alphabet: string[], setError:
   if (isNaN(row) || colIndex === -1) return null;
 
   let cellValue = table[row]?.[colIndex]?.value;
-  if(table[row]?.[colIndex]?.formula){
-    const res = handleEndOfSentence(table[row]?.[colIndex]?.formula, setError, dispatch, table, alphabet);
+  if(table[row]?.[colIndex]?.formula && !(row === currentRow && colIndex === currentCol)){
+    const res = handleEndOfSentence(table[row]?.[colIndex]?.formula, setError, dispatch, table, alphabet, currentRow, currentCol);
     cellValue = res?.result;
   }
   
@@ -23,7 +23,9 @@ const calculateFormula = (
   table: any,
   alphabet: string[],
   setError: (msg: string) => void,
-  dispatch: any
+  dispatch: any,
+  currentRow: number,
+  currentCol: number
 ): number | null => {
   const operator = formula.includes("+") ? "+" : formula.includes("-") ? "-" : null;
 
@@ -41,7 +43,13 @@ const calculateFormula = (
   const values: number[] = [];
 
   for (const op of operands) {
-    const value = parseOperand(op, table, alphabet, setError, dispatch);
+    const parsedNum = Number(op);
+    if (!isNaN(parsedNum)) {
+      values.push(parsedNum);
+      continue;
+    }
+
+    const value = parseOperand(op, table, alphabet, setError, dispatch, currentRow, currentCol);
     if (value === null) {
       setError("Please verify that all values are valid.");
       return null;
@@ -56,7 +64,7 @@ const calculateFormula = (
   return result;
 };
 
-export const handleEndOfSentence = (value: string, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
+export const handleEndOfSentence = (value: string, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[], currentRow: number, currentCol: number) => {
 
   if (!value.startsWith("=")){
     return ;
@@ -69,7 +77,7 @@ export const handleEndOfSentence = (value: string, setError: (msg: string) => vo
   }
 
   const formula = value.substring(1); 
-  const result = calculateFormula(formula, table, alphabet, setError, dispatch);
+  const result = calculateFormula(formula, table, alphabet, setError, dispatch, currentRow, currentCol);
 
   return {result, value}
   
