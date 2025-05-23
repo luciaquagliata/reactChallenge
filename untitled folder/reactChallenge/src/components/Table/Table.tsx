@@ -29,7 +29,7 @@ function Table() {
         if (!cell) continue;
 
         const formula = cell.formula || '';
-        const res = handleEndOfSentence(formula, i, j, setError, dispatch, table, alphabet);
+        const res = handleEndOfSentence(formula,setError, dispatch, table, alphabet);
         if (res?.result) {
           dispatch(updateCell({ row: i, col: j, value: String(res.result), formula }));
         }
@@ -37,10 +37,10 @@ function Table() {
     }
   };
   
-  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError, dispatch, table, alphabet: string[]) => {
+  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
     const value = event.target.value;
-    const res = handleEndOfSentence(value, row, col, setError, dispatch, table, alphabet);
-    if(res?.result){
+    const res = handleEndOfSentence(value, setError, dispatch, table, alphabet);
+    if(res && (res.result || res?.result === 0)){
       setError("");
       dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
       //recalculateAllCells();

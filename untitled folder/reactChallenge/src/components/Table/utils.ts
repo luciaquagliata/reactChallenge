@@ -1,5 +1,4 @@
-
-const parseOperand = (operand: string, table: any, alphabet: string[], setError, dispatch): number | null => {
+const parseOperand = (operand: string, table: any, alphabet: string[], setError: (msg: string) => void, dispatch: any): number | null => {
   if (!operand.includes(":")) {
     return isNaN(Number(operand)) ? null : Number(operand);
   }
@@ -12,7 +11,7 @@ const parseOperand = (operand: string, table: any, alphabet: string[], setError,
 
   let cellValue = table[row]?.[colIndex]?.value;
   if(table[row]?.[colIndex]?.formula){
-    const res = handleEndOfSentence(table[row]?.[colIndex]?.formula, row, colIndex, setError, dispatch, table, alphabet);
+    const res = handleEndOfSentence(table[row]?.[colIndex]?.formula, setError, dispatch, table, alphabet);
     cellValue = res?.result;
   }
   
@@ -24,12 +23,12 @@ const calculateFormula = (
   table: any,
   alphabet: string[],
   setError: (msg: string) => void,
-  dispatch
+  dispatch: any
 ): number | null => {
   const operator = formula.includes("+") ? "+" : formula.includes("-") ? "-" : null;
 
   if (!operator) {
-    setError("Please verify the requested formula. Only addiDon and subtraction are accepted.");
+    setError("Please verify the requested formula. Only addition and subtraction are accepted.");
     return null;
   }
 
@@ -57,7 +56,7 @@ const calculateFormula = (
   return result;
 };
 
-export const handleEndOfSentence = (value: string, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
+export const handleEndOfSentence = (value: string, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
 
   if (!value.startsWith("=")){
     return ;
