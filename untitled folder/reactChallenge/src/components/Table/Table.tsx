@@ -1,8 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { updateCell, updateAllCells } from "../../store";
+import { updateCell } from "../../store";
 import type { cellType } from "../../types/cellType";
 import type { RootState } from "../../store";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StyledTable, CellInput, HeaderCell, RowHeader, ErrorMessage } from "./styles";
 import { handleEndOfSentence } from "./utils";
 
@@ -43,7 +43,9 @@ function Table() {
     if(res?.result){
       setError("");
       dispatch(updateCell({ row, col, value: String(res.result), formula: res?.value}));
-      recalculateAllCells();
+      //recalculateAllCells();
+    } else{
+      dispatch(updateCell({ row, col, value, formula: 'empty'}));
     }
     recalculateAllCells();
   }
@@ -51,7 +53,7 @@ function Table() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, row: number, col: number) => {
     const value = event.target.value;
     setError('');
-    dispatch(updateCell({ row, col, value})); 
+    dispatch(updateCell({ row, col, value, formula: 'empty'})); 
   }
 
   const maxRow = table.length;

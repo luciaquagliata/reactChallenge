@@ -59,7 +59,9 @@ const calculateFormula = (
 
 export const handleEndOfSentence = (value: string, row: number, col: number, setError: (msg: string) => void, dispatch: any, table: any, alphabet: string[]) => {
 
-  if (!value.startsWith("=")) return;
+  if (!value.startsWith("=")){
+    return ;
+  };
 
   const matches = value.match(/=/g) || [];
   if (matches.length > 1) {
